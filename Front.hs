@@ -28,7 +28,7 @@ module Front where
 import Control.Arrow
 import Control.Exception
 import Control.Monad
-import Control.Monad.Error
+import Control.Monad.Except
 import Data.Char
 import Data.Either
 import Data.List

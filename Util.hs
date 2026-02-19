@@ -12,7 +12,7 @@
 --   Otherwise use Arrow.
 module Util(module Util,throwError) where
 import Control.Arrow
-import Control.Monad.Error
+import Control.Monad.Except
 import Control.Monad.State
 import Control.Monad.Identity
 import Data.List
@@ -21,11 +21,11 @@ import qualified Data.IntMap as IM
 
 
 -- | Process that may fail with ['CompileError']
--- ErrorT Identity is used for future use. (cf. ErrorT Writer)
-type Process a=ErrorT [CompileError] Identity a
+-- ExceptT Identity is used for future use. (cf. ExceptT Writer)
+type Process a=ExceptT [CompileError] Identity a
 
 runProcess :: Process a -> Either [CompileError] a
-runProcess=runIdentity . runErrorT
+runProcess=runIdentity . runExceptT
 
 runProcessWithIO :: (a->IO ()) -> Process a -> IO ()
 runProcessWithIO f=either (putStr . unlines . map show) f . runProcess
@@ -47,8 +47,8 @@ instance Show CompileError where
     show (CompileErrorN m d ps)=m++":\n"++d++"\n"++concatMap (\x->"in "++x++"\n") ps
 
 
-instance Error [CompileError] where
-    noMsg=[]
+--instance Error [CompileError] where
+--    noMsg=[]
 
 
 -- | Nested structure multiple reporter monad

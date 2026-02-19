@@ -696,13 +696,13 @@ alloc n=do
     put $ GMInternal st $ M.insert addr n h
     return addr
 
-pop :: Monad m => GMST m Address
+pop :: MonadFail m => GMST m Address
 pop=do
     GMInternal (s:ss) h<-get
     put $ GMInternal ss h
     return s
 
-popn :: Monad m => Int -> GMST m [Address]
+popn :: MonadFail m => Int -> GMST m [Address]
 popn=flip replicateM pop
 
 
