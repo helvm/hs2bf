@@ -93,7 +93,7 @@ modToPath (ModuleEnv dirs) name=
     handle (\(SomeException _)->return Nothing) $ liftM Just $ firstM doesFileExist $ map (</>(name++".hs")) dirs
 
 -- | Returns first element which satisfies the predicate.
-firstM :: Monad m => (a -> m Bool) -> [a] -> m a
+firstM :: MonadFail m => (a -> m Bool) -> [a] -> m a
 firstM f []=fail "firstM: not found"
 firstM f (x:xs)=do
     e<-f x

@@ -32,6 +32,8 @@ import Util as U hiding(Pack)
 import qualified Util as U
 import GMachine
 
+import Control.Monad (liftM, liftM2, zipWithM)
+
 type LocHint=String
 
 
