@@ -12,7 +12,7 @@ function test_bf
     echo "=== $hs_path ==="
 
     rm -f $bf_path
-    set hs2bf_bin (cabal list-bin hs2bf)
+    set hs2bf_bin (cabal list-bin hs2bf-exe)
     echo $hs2bf_bin
     $hs2bf_bin --make $hs_path > $bf_path
 
