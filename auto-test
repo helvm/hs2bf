@@ -1,4 +1,4 @@
-#!/bin/env fish
+#!/usr/bin/env fish
 
 # test_bf ::
 #   FilePath -> -- ^ Haskell code to be compiled and run
@@ -12,9 +12,12 @@ function test_bf
     echo "=== $hs_path ==="
 
     rm -f $bf_path
-    dist/build/hs2bf/hs2bf --make $hs_path > $bf_path
+    set hs2bf_bin (cabal list-bin hs2bf)
+    echo $hs2bf_bin
+    $hs2bf_bin --make $hs_path > $bf_path
 
-    set result (time -f 'user:%U sys:%S' bfi/bfi $bf_path)
+#    set result (time -f 'user:%U sys:%S' bfi/bfi $bf_path)
+    set result (time bfi/bfi $bf_path)
     
     if test "$result" = "$expected"
         set_color green
