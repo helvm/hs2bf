@@ -6,54 +6,50 @@
 --
 -- * Input command requires unknown latency in addition to it.
 module Brainfuck where
+
 import Control.Monad
 import Data.Array.IO
 import Data.Char
 import Data.Word
-
 import Util
 
-
-
-
-
-
 -- | Original brainfuck + loop construct.
-data BF=BF [BFInst]
+data BF = BF [BFInst]
 
 data BFInst
-    =BFPInc
-    |BFPDec
-    |BFVInc
-    |BFVDec
-    |BFBegin
-    |BFEnd
-    |BFInput
-    |BFOutput
-    |BFLoop [BFInst] -- ^ a little bit high-level construct
+  = BFPInc
+  | BFPDec
+  | BFVInc
+  | BFVDec
+  | BFBegin
+  | BFEnd
+  | BFInput
+  | BFOutput
+  | -- | a little bit high-level construct
+    BFLoop [BFInst]
 
 instance Show BF where
-    show (BF is)=concatMap show is
+  show (BF is) = concatMap show is
 
 instance Show BFInst where
-    show BFPInc=">"
-    show BFPDec="<"
-    show BFVInc="+"
-    show BFVDec="-"
-    show BFBegin="["
-    show BFEnd="]"
-    show BFInput=","
-    show BFOutput="."
-    show (BFLoop ss)="["++concatMap show ss++"]"
+  show BFPInc = ">"
+  show BFPDec = "<"
+  show BFVInc = "+"
+  show BFVDec = "-"
+  show BFBegin = "["
+  show BFEnd = "]"
+  show BFInput = ","
+  show BFOutput = "."
+  show (BFLoop ss) = "[" ++ concatMap show ss ++ "]"
 
-
-pprint bf=unlines $ sepC 80 $ show bf
+pprint bf = unlines $ sepC 80 $ show bf
 
 sepC :: Int -> [a] -> [[a]]
 sepC w xs
-    |null rs   = [r]
-    |otherwise = r:sepC w rs
-    where (r,rs)=splitAt w xs
+  | null rs = [r]
+  | otherwise = r : sepC w rs
+  where
+    (r, rs) = splitAt w xs
 
 -- | Assume /standard/ environment. That is
 --
@@ -63,43 +59,36 @@ sepC w xs
 --
 -- * Moving into negative address immediately causes an error.
 interpret :: BF -> IO ()
-interpret (BF is)=newArray (0,1000) 0 >>= evalBF (detectLoop is) 0
+interpret (BF is) = newArray (0, 1000) 0 >>= evalBF (detectLoop is) 0
 
 evalBF :: [BFInst] -> Int -> IOUArray Int Word8 -> IO ()
-evalBF [] ptr arr=return ()
-evalBF (BFPInc:is) ptr arr=do
-    pmax<-liftM snd $ getBounds arr
-    if ptr>=pmax
-        then getElems arr >>= newListArray (0,pmax*2+1) . (++replicate (pmax+1) 0) >>= evalBF is (ptr+1)
-        else evalBF is (ptr+1) arr
-evalBF (BFPDec:is) ptr arr=evalBF is (ptr-1) arr
-evalBF (BFVInc:is) ptr arr=readArray arr ptr >>= writeArray arr ptr . (+1) >> evalBF is ptr arr
-evalBF (BFVDec:is) ptr arr=readArray arr ptr >>= writeArray arr ptr . (+(-1)) >> evalBF is ptr arr
-evalBF (BFInput:is) ptr arr=getChar >>= writeArray arr ptr . fromIntegral . ord >> evalBF is ptr arr
-evalBF (BFOutput:is) ptr arr=readArray arr ptr >>= putChar . chr . fromIntegral >> evalBF is ptr arr
-evalBF is0@(BFLoop ss:is) ptr arr=do
-    flag<-readArray arr ptr
-    if flag==0 then evalBF is ptr arr else evalBF (ss++is0) ptr arr
+evalBF [] ptr arr = return ()
+evalBF (BFPInc : is) ptr arr = do
+  pmax <- liftM snd $ getBounds arr
+  if ptr >= pmax
+    then getElems arr >>= newListArray (0, pmax * 2 + 1) . (++ replicate (pmax + 1) 0) >>= evalBF is (ptr + 1)
+    else evalBF is (ptr + 1) arr
+evalBF (BFPDec : is) ptr arr = evalBF is (ptr - 1) arr
+evalBF (BFVInc : is) ptr arr = readArray arr ptr >>= writeArray arr ptr . (+ 1) >> evalBF is ptr arr
+evalBF (BFVDec : is) ptr arr = readArray arr ptr >>= writeArray arr ptr . (+ (-1)) >> evalBF is ptr arr
+evalBF (BFInput : is) ptr arr = getChar >>= writeArray arr ptr . fromIntegral . ord >> evalBF is ptr arr
+evalBF (BFOutput : is) ptr arr = readArray arr ptr >>= putChar . chr . fromIntegral >> evalBF is ptr arr
+evalBF is0@(BFLoop ss : is) ptr arr = do
+  flag <- readArray arr ptr
+  if flag == 0 then evalBF is ptr arr else evalBF (ss ++ is0) ptr arr
 
-
-detectLoop is=pprog is
-
+detectLoop is = pprog is
 
 -- PROG=EXPR*
 -- EXPR=PRIM|BEGIN EXPR* END
 
-pprog []=[]
-pprog is=let (t,is')=takeOne is in t:pprog is'
+pprog [] = []
+pprog is = let (t, is') = takeOne is in t : pprog is'
 
-takeOne (BFBegin:is)=let (ts,is')=ploop is in (BFLoop ts,is')
-takeOne (BFEnd:_)=error "missing Begin"
-takeOne (i:is)=(i,is)
+takeOne (BFBegin : is) = let (ts, is') = ploop is in (BFLoop ts, is')
+takeOne (BFEnd : _) = error "missing Begin"
+takeOne (i : is) = (i, is)
 
-ploop []=error "missing End"
-ploop (BFEnd:is)=([],is)
-ploop is=let (t,is')=takeOne is in let (ts,is'')=ploop is' in (t:ts,is'')
-
-
-
-
-
+ploop [] = error "missing End"
+ploop (BFEnd : is) = ([], is)
+ploop is = let (t, is') = takeOne is in let (ts, is'') = ploop is' in (t : ts, is'')

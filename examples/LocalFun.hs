@@ -1,4 +1,3 @@
-
-main=f '~'
-    where f x=Output x Halt
-
+main = f '~'
+  where
+    f x = Output x Halt

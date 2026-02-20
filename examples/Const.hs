@@ -1,3 +1,1 @@
-
-main=Output '~' Halt
-
+main = Output '~' Halt

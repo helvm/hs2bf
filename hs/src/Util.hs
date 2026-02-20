@@ -1,4 +1,6 @@
-{-# LANGUAGE FlexibleInstances, OverlappingInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverlappingInstances #-}
+
 -- | Modular error reporting and common functions
 --
 -- note for future me: Arrow vs. Monad
@@ -6,132 +8,123 @@
 --   Parallel execution of such processes can be written as:
 --    (a -> m b) -> [a] -> m [b]  : Monadic form
 --    w a b -> w [a] [b] : Arrow form
--- 
+--
 -- How to decide on one?
 --    If you can write [m b] -> m [b] , then use Monad.
 --   Otherwise use Arrow.
-module Util(module Util,throwError) where
+module Util (module Util, throwError) where
+
 import Control.Arrow
 import Control.Monad.Except
-import Control.Monad.State
 import Control.Monad.Identity
+import Control.Monad.State
+import qualified Data.IntMap as IM
 import Data.List
 import Data.Word
-import qualified Data.IntMap as IM
-
 
 -- | Process that may fail with ['CompileError']
 -- ExceptT Identity is used for future use. (cf. ExceptT Writer)
-type Process a=ExceptT [CompileError] Identity a
+type Process a = ExceptT [CompileError] Identity a
 
 runProcess :: Process a -> Either [CompileError] a
-runProcess=runIdentity . runExceptT
+runProcess = runIdentity . runExceptT
 
-runProcessWithIO :: (a->IO ()) -> Process a -> IO ()
-runProcessWithIO f=either (putStr . unlines . map show) f . runProcess
-
-
-
+runProcessWithIO :: (a -> IO ()) -> Process a -> IO ()
+runProcessWithIO f = either (putStr . unlines . map show) f . runProcess
 
 -- | A detailed compile error
--- 
+--
 -- * 'CompileError' is used in early stages where filename and line number is known
 --
 -- * 'CompileErrorN' is used in later stages where only non-numerical position is available
 data CompileError
-    =CompileError String String String -- ^ e.g. CompileError "Haskell->Core" "Main.hs:12" "parse error"
-    |CompileErrorN String String [String] -- ^ e.g. CompileErrorN "SAM->SAM" "unknown register x" ["while","proc foo"]
+  = -- | e.g. CompileError "Haskell->Core" "Main.hs:12" "parse error"
+    CompileError String String String
+  | -- | e.g. CompileErrorN "SAM->SAM" "unknown register x" ["while","proc foo"]
+    CompileErrorN String String [String]
 
 instance Show CompileError where
-    show (CompileError m p d)=m++":"++p++":\n"++d
-    show (CompileErrorN m d ps)=m++":\n"++d++"\n"++concatMap (\x->"in "++x++"\n") ps
+  show (CompileError m p d) = m ++ ":" ++ p ++ ":\n" ++ d
+  show (CompileErrorN m d ps) = m ++ ":\n" ++ d ++ "\n" ++ concatMap (\x -> "in " ++ x ++ "\n") ps
 
-
---instance Error [CompileError] where
+-- instance Error [CompileError] where
 --    noMsg=[]
 
-
 -- | Nested structure multiple reporter monad
-type NMR p e a=State ([p],[([p],e)]) a
+type NMR p e a = State ([p], [([p], e)]) a
 
 report :: e -> NMR p e ()
-report e=do
-    (pos,es)<-get
-    put (pos,(pos,e):es)
+report e = do
+  (pos, es) <- get
+  put (pos, (pos, e) : es)
 
 within :: p -> NMR p e a -> NMR p e a
-within x f=do
-    modify (first (x:))
-    r<-f
-    modify (first tail)
-    return r
+within x f = do
+  modify (first (x :))
+  r <- f
+  modify (first tail)
+  return r
 
-runNMR :: NMR p e a -> (a,[([p],e)])
-runNMR=second snd . flip runState ([],[])
-
-
-
-
+runNMR :: NMR p e a -> (a, [([p], e)])
+runNMR = second snd . flip runState ([], [])
 
 data SBlock
-    =EmptyLine
-    |Line IBlock
-    |Group [SBlock]
-    |Indent SBlock
+  = EmptyLine
+  | Line IBlock
+  | Group [SBlock]
+  | Indent SBlock
 
 -- | Inline string
 data IBlock
-    =Prim String
-    |Pack [IBlock]
-    |Span [IBlock]
+  = Prim String
+  | Pack [IBlock]
+  | Span [IBlock]
 
 -- | Render 'SBlock'
 compileSB :: SBlock -> String
-compileSB=unlines . saux 0
+compileSB = unlines . saux 0
 
 saux :: Int -> SBlock -> [String]
-saux _ EmptyLine=[""]
-saux n (Line i)=[replicate (n*4) ' '++compileIB i]
-saux n (Group xs)=concatMap (saux n) xs
-saux n (Indent x)=saux (n+1) x
+saux _ EmptyLine = [""]
+saux n (Line i) = [replicate (n * 4) ' ' ++ compileIB i]
+saux n (Group xs) = concatMap (saux n) xs
+saux n (Indent x) = saux (n + 1) x
 
 -- | Render 'IBlock'
 compileIB :: IBlock -> String
-compileIB (Prim x)=x
-compileIB (Pack xs)=concatMap compileIB xs
-compileIB (Span xs)=concatMap compileIB $ intersperse (Prim " ") xs
-
+compileIB (Prim x) = x
+compileIB (Pack xs) = concatMap compileIB xs
+compileIB (Span xs) = concatMap compileIB $ intersperse (Prim " ") xs
 
 -- | Moderately fast memory suitable for use in interpreters.
-data FlatMemory=FlatMemory (IM.IntMap Word8)
+data FlatMemory = FlatMemory (IM.IntMap Word8)
 
 minit :: FlatMemory
-minit=FlatMemory $ IM.empty
+minit = FlatMemory $ IM.empty
 
 mread :: FlatMemory -> Int -> Word8
-mread (FlatMemory m) i=maybe 0 id $ IM.lookup i m
+mread (FlatMemory m) i = maybe 0 id $ IM.lookup i m
 
 mwrite :: FlatMemory -> Int -> Word8 -> FlatMemory
-mwrite (FlatMemory m) i v=FlatMemory $ IM.insert i v m
+mwrite (FlatMemory m) i v = FlatMemory $ IM.insert i v m
 
 mmodify :: FlatMemory -> Int -> (Word8 -> Word8) -> FlatMemory
-mmodify fm i f=mwrite fm i (f $ mread fm i)
+mmodify fm i f = mwrite fm i (f $ mread fm i)
 
 msize :: FlatMemory -> Int
-msize (FlatMemory m)=case IM.maxViewWithKey m of
-    Nothing -> 0
-    Just ((k,v),m') -> if v/=0 then k+1 else msize $ FlatMemory m'
-
+msize (FlatMemory m) = case IM.maxViewWithKey m of
+  Nothing -> 0
+  Just ((k, v), m') -> if v /= 0 then k + 1 else msize $ FlatMemory m'
 
 -- | a b c ... z aa ab ac ... az ba ...
 -- avoid CAF.
 stringSeq :: String -> [String]
-stringSeq prefix=tail $ map ((prefix++) . reverse) $ iterate stringInc []
+stringSeq prefix = tail $ map ((prefix ++) . reverse) $ iterate stringInc []
 
 stringInc :: String -> String
-stringInc []="a"
-stringInc ('z':xs)='a':stringInc xs
-stringInc (x:xs)=succ x:xs
+stringInc [] = "a"
+stringInc ('z' : xs) = 'a' : stringInc xs
+stringInc (x : xs) = succ x : xs
 
 -- | usage
 --
@@ -141,18 +134,19 @@ stringInc (x:xs)=succ x:xs
 --
 -- > ["Xbc","aYc","abZ"]
 change1 :: [a] -> [a] -> [[a]]
-change1 (x:xs) (y:ys)=(x:ys):map (y:) (change1 xs ys)
-change1 _ _=[]
+change1 (x : xs) (y : ys) = (x : ys) : map (y :) (change1 xs ys)
+change1 _ _ = []
 
-mapAt :: Int -> (a->a) -> [a] -> [a]
-mapAt ix0 f=zipWith g [0..]
-    where g ix x=if ix==ix0 then f x else x
+mapAt :: Int -> (a -> a) -> [a] -> [a]
+mapAt ix0 f = zipWith g [0 ..]
+  where
+    g ix x = if ix == ix0 then f x else x
 
-fst3 (x,_,_)=x
-snd3 (_,y,_)=y
-thr3 (_,_,z)=z
+fst3 (x, _, _) = x
 
+snd3 (_, y, _) = y
 
-equaling :: Eq b => (a -> b) -> (a -> a -> Bool)
-equaling f x y=f x==f y
+thr3 (_, _, z) = z
 
+equaling :: (Eq b) => (a -> b) -> (a -> a -> Bool)
+equaling f x y = f x == f y
