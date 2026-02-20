@@ -2,7 +2,7 @@
 -- reference: Implementing Functional Languages: a tutorial
 --
 -- GC is executed every 256 allocation.
-module GMachine where
+module HS2BF.GMachine where
 
 import Control.Arrow
 import Control.Monad
@@ -14,10 +14,11 @@ import qualified Data.Map as M
 import Data.Maybe
 import Data.Ord
 import qualified Data.Set as S
-import SAM
-import SRuntime
-import Util as U hiding (Pack)
-import qualified Util as U
+import HS2BF.SAM
+import qualified HS2BF.SAM as SAM
+import HS2BF.SRuntime
+import HS2BF.Util as U hiding (Pack)
+import qualified HS2BF.Util as U
 
 data GFCompileFlag = GFCompileFlag
   { -- | bytes
@@ -157,7 +158,7 @@ fPos (Case _) = StackT
 fPos (UnPack _) = StackA
 fPos (Update _) = StackT
 fPos (Pop _) = StackT
-fPos (GMachine.Alloc _) = fPos $ PushByte 0
+fPos (HS2BF.GMachine.Alloc _) = fPos $ PushByte 0
 fPos (Arith _) = StackT
 fPos (UError _) = StackA -- any position will do, actually.
 fPos x = error $ show x
@@ -166,7 +167,7 @@ fPos x = error $ show x
 newFrame :: Int -> [Int] -> (Pointer -> [Stmt]) -> [Stmt]
 newFrame tag xs post =
   [ Comment $ unwords ["nf", show tag, show xs],
-    SAM.Alloc "addr",
+     HS2BF.SAM.Alloc "addr",
     Inline "#heapNewHp" ["addr"],
     Clear (Memory "Hp" $ size - 2),
     Move (Register "addr") [Memory "Hp" $ size - 2],
@@ -215,7 +216,7 @@ compileCode :: M.Map String Int -> [GMCode] -> [Stmt]
 compileCode m (PushByte x : is) =
   -- constTag x
   contWith m StackT is $ newFrame constTag [x] $ \pa ->
-    [ SAM.Alloc "addr",
+    [  HS2BF.SAM.Alloc "addr",
       Copy pa [Register "addr"],
       Inline "#heap1Hp" [],
       Inline "#stackNewS0" [],
@@ -225,7 +226,7 @@ compileCode m (PushByte x : is) =
 compileCode m (PushSC k : is) =
   -- scTag sc
   contWith m StackT is $ newFrame scTag [m M.! k] $ \pa ->
-    [ SAM.Alloc "addr",
+    [  HS2BF.SAM.Alloc "addr",
       Copy pa [Register "addr"],
       Inline "#heap1Hp" [],
       Inline "#stackNewS0" [],
@@ -235,13 +236,13 @@ compileCode m (PushSC k : is) =
 compileCode m (MkApp : is) =
   -- appTag ap0 ap1
   contWith m HeapA is $ newFrame appTag [0, 0] $ \pa ->
-    [ SAM.Alloc "addr",
+    [  HS2BF.SAM.Alloc "addr",
       Copy pa [Register "addr"],
       Inline "#heap1Hp" [],
       Inline "#stackNewS0" [],
-      SAM.Alloc "tr1",
+       HS2BF.SAM.Alloc "tr1",
       Move (Memory "S0" (-1)) [Register "tr1"],
-      SAM.Alloc "tr2",
+       HS2BF.SAM.Alloc "tr2",
       Move (Memory "S0" (-2)) [Register "tr2"],
       Copy (Register "addr") [Memory "S0" (-2)],
       Locate (-2),
@@ -255,7 +256,7 @@ compileCode m (MkApp : is) =
     ]
 compileCode m (Pack t 0 : is) =
   contWith m StackT is $ newFrame structTag [t] $ \pa ->
-    [ SAM.Alloc "addr",
+    [  HS2BF.SAM.Alloc "addr",
       Copy pa [Register "addr"],
       Inline "#heap1Hp" [],
       Inline "#stackNewS0" [],
@@ -265,7 +266,7 @@ compileCode m (Pack t 0 : is) =
 compileCode m (Pack t n : is) =
   -- stTag t x1...xn
   contWith m HeapA is $ newFrame structTag (t : replicate n 0) $ \pa ->
-    [ SAM.Alloc "addr",
+    [  HS2BF.SAM.Alloc "addr",
       Copy pa [Register "addr"],
       Inline "#heap1Hp" [],
       Inline "#stackNewS0" []
@@ -287,7 +288,7 @@ compileCode m (UnPack 0 : is) =
 compileCode m (UnPack n : is) =
   contWith m StackA is $ -- the last item becomes top
     [ Inline "#stackNewS0" [],
-      SAM.Alloc "saddr",
+       HS2BF.SAM.Alloc "saddr",
       Move (Memory "S0" (-1)) [Register "saddr"],
       Locate (-2),
       Inline "#stack1S0" [],
@@ -303,7 +304,7 @@ compileCode m (UnPack n : is) =
       ++ map (Delete . ("tr" ++) . show) [1 .. n]
 compileCode m (Swap : is) =
   contWith m StackT is $
-    [ SAM.Alloc "temp",
+    [  HS2BF.SAM.Alloc "temp",
       Move (Memory "S0" 0) [Register "temp"],
       Move (Memory "S0" (-1)) [Memory "S0" 0],
       Move (Register "temp") [Memory "S0" (-1)],
@@ -326,12 +327,12 @@ compileCode m (Slide n : is) =
           ++ [Locate $ negate n]
 compileCode m (PushArg n : is) =
   contWith m StackT is $
-    [ SAM.Alloc "aaddr",
+    [  HS2BF.SAM.Alloc "aaddr",
       Copy (Memory "S0" $ negate n) [Register "aaddr"],
       Inline "#stack1S0" [],
       Inline "#heapRefHp" ["aaddr"],
       Delete "aaddr",
-      SAM.Alloc "arg",
+       HS2BF.SAM.Alloc "arg",
       Copy (Memory "Hp" 4) [Register "arg"],
       Inline "#heap1Hp" [],
       Inline "#stackNewS0" [],
@@ -340,22 +341,22 @@ compileCode m (PushArg n : is) =
     ]
 compileCode m (Case cs : is) =
   contWith m Origin is $
-    [ SAM.Alloc "saddr",
+    [  HS2BF.SAM.Alloc "saddr",
       Copy (Memory "S0" 0) [Register "saddr"],
       Inline "#stack1S0" [],
       Inline "#heapRefHp" ["saddr"],
       Delete "saddr",
-      SAM.Alloc "tag",
+       HS2BF.SAM.Alloc "tag",
       Copy (Memory "Hp" 3) [Register "tag"],
       Dispatch "tag" $ map (second $ flip (contWith m HeapA) []) cs,
       Delete "tag"
     ]
 compileCode m (Update n : is) =
   contWith m HeapA is $
-    [ SAM.Alloc "to",
+    [  HS2BF.SAM.Alloc "to",
       Move (Memory "S0" 0) [Register "to"],
       Locate (-1),
-      SAM.Alloc "from",
+       HS2BF.SAM.Alloc "from",
       Copy (Memory "S0" $ 1 - n) [Register "from"],
       Inline "#stack1S0" [],
       -- rewrite stack
@@ -369,7 +370,7 @@ compileCode m (Update n : is) =
       -- rewrite heap
       While
         (Memory "Hp" 0)
-        [ SAM.Alloc "ntag",
+        [  HS2BF.SAM.Alloc "ntag",
           Copy (Memory "Hp" 2) [Register "ntag"],
           Dispatch
             "ntag"
@@ -388,7 +389,7 @@ compileCode m (Update n : is) =
                 [Locate 6]
               ),
               ( structTag,
-                [ SAM.Alloc "size",
+                [  HS2BF.SAM.Alloc "size",
                   Copy (Memory "Hp" 0) [Register "size"],
                   Val (Register "size") (-6),
                   Locate 4,
@@ -412,7 +413,7 @@ compileCode m (Pop n : is) =
   contWith m StackT is $
     concat $
       replicate n [Clear (Memory "S0" 0), Locate (-1)]
-compileCode m (GMachine.Alloc n : is) = compileCode m $ replicate n (PushByte 0) ++ is
+compileCode m (HS2BF.GMachine.Alloc n : is) = compileCode m $ replicate n (PushByte 0) ++ is
 compileCode m (UError s : _) = Clear ptr : concatMap (\d -> [Val ptr d, Output ptr]) ds
   where
     ds = head ns : zipWith (-) (tail ns) ns
@@ -420,8 +421,8 @@ compileCode m (UError s : _) = Clear ptr : concatMap (\d -> [Val ptr d, Output p
     ptr = Memory "S0" 0
 compileCode m (Arith op : is) =
   contWith m StackT is $
-    [ SAM.Alloc "x",
-      SAM.Alloc "y",
+    [  HS2BF.SAM.Alloc "x",
+       HS2BF.SAM.Alloc "y",
       Move (Memory "S0" 0) [Register "x"],
       Move (Memory "S0" (-1)) [Register "y"],
       Locate (-2),
@@ -431,12 +432,12 @@ compileCode m (Arith op : is) =
       Inline "#heap1Hp" [],
       Inline "#heapRefHp" ["y"],
       Delete "y",
-      SAM.Alloc "temp",
+       HS2BF.SAM.Alloc "temp",
       Copy (Memory "Hp" 3) [Register "temp"]
     ]
       ++ f (Register "temp") (Register "x") op
       ++ [ Delete "temp",
-           SAM.Alloc "addr",
+           HS2BF.SAM.Alloc "addr",
            Inline "#heapNewHp" ["addr"],
            Clear (Memory "Hp" 0),
            Val (Memory "Hp" 0) 6,
@@ -463,11 +464,11 @@ compileCode m (Arith op : is) =
     f from to AAdd = [While from [Val from (-1), Val to 1]]
     f from to ASub = [While from [Val from (-1), Val to (-1)]]
     f from to CCmp =
-      [ SAM.Alloc "t",
+      [ HS2BF.SAM.Alloc "t",
         Val (Register "t") 1,
         While
           (Register "t")
-          [ SAM.Alloc "s",
+          [ HS2BF.SAM.Alloc "s",
             Copy from [Register "s"],
             Val (Register "t") 1,
             While
@@ -671,7 +672,7 @@ evalGM fl fs (Update n : xs) = do
     fH f t (App x y) = App (fS f t x) (fS f t y)
     fH f t (Struct tag xs) = Struct tag $ map (fS f t) xs
     fH _ _ x = x
-evalGM fl fs (GMachine.Alloc n : xs) = evalGM fl fs $ replicate n (PushByte 0) ++ xs
+evalGM fl fs (HS2BF.GMachine.Alloc n : xs) = evalGM fl fs $ replicate n (PushByte 0) ++ xs
 evalGM fl fs (Arith op : xs) = do
   Const x <- pop >>= refHeap
   Const y <- pop >>= refHeap
@@ -687,7 +688,7 @@ showState g =
   unlines $
     unwords (map show st) : map (\(k, v) -> show k ++ ":" ++ show v) (M.assocs hp)
   where
-    GMInternal st hp = GMachine.gc g
+    GMInternal st hp = HS2BF.GMachine.gc g
 
 -- | do not modify pointers
 gc :: GMInternal -> GMInternal

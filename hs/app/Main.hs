@@ -12,17 +12,17 @@
 -- See the source of 'help' for detailed description\/specification of features.
 module Main where
 
-import qualified Brainfuck
+import qualified HS2BF.Brainfuck as Brainfuck
 import Control.Monad
-import qualified Core
-import qualified Front
-import qualified GMachine
+import qualified HS2BF.Core as Core
+import qualified HS2BF.Front as Front
+import qualified HS2BF.GMachine as GMachine
 import qualified Paths_hs2bf
-import qualified SAM
+import qualified HS2BF.SAM as SAM
 import System.Environment
 import System.FilePath.Posix
 import System.IO
-import Util
+import HS2BF.Util
 
 main = execCommand =<< liftM parseArgs getArgs
 

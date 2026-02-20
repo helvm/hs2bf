@@ -24,13 +24,13 @@
 -- * #aa_2... : arguments ('HsMatch')
 --
 -- * #xa_1... : pattern matching
-module Front where
+module HS2BF.Front where
 
 import Control.Arrow
 import Control.Exception
 import Control.Monad
 import Control.Monad.Except
-import Core hiding (multiApp)
+import HS2BF.Core hiding (multiApp)
 import Data.Char
 import Data.Either
 import Data.List
@@ -41,7 +41,7 @@ import Language.Haskell.Parser
 import Language.Haskell.Syntax
 import System.Directory
 import System.FilePath.Posix
-import Util
+import HS2BF.Util
 
 -- | Necessary information for translating module name to 'FilePath'.
 data ModuleEnv = ModuleEnv [FilePath]

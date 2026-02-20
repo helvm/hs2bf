@@ -16,7 +16,7 @@
 -- * lambda lifting
 --
 -- are done in Core language
-module Core where
+module HS2BF.Core where
 
 import Control.Arrow
 import Control.Monad (liftM, liftM2, zipWithM)
@@ -29,9 +29,9 @@ import Data.Ord
 import Data.Sequence ((<|), (><), (|>))
 import qualified Data.Sequence as Q
 import qualified Data.Set as S
-import GMachine
-import Util as U hiding (Pack)
-import qualified Util as U
+import HS2BF.GMachine
+import HS2BF.Util as U hiding (Pack)
+import qualified HS2BF.Util as U
 
 type LocHint = String
 

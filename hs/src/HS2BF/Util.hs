@@ -12,7 +12,7 @@
 -- How to decide on one?
 --    If you can write [m b] -> m [b] , then use Monad.
 --   Otherwise use Arrow.
-module Util (module Util, throwError) where
+module HS2BF.Util (module HS2BF.Util, throwError) where
 
 import Control.Arrow
 import Control.Monad.Except

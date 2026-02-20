@@ -25,9 +25,9 @@
 -- * 'Val' 'Dispatch' 'Clear' 'While' 'Alloc' 'Delete' 'Move' should be expanded by a new 'Pointer'
 --
 -- * Difference from Integer support in Prelude: fixed size
-module SAM where
+module HS2BF.SAM where
 
-import Brainfuck
+import HS2BF.Brainfuck
 import Control.Arrow
 import Control.Monad
 import Control.Monad.State
@@ -42,7 +42,7 @@ import qualified Data.Set as S
 import Data.Word
 import Numeric
 import Text.Printf
-import Util
+import HS2BF.Util
 
 compile :: SAM -> Process BF
 compile (SAM _ [SProc _ [] ss]) = return $ BF $ soptBF $ concatMap compileS ss

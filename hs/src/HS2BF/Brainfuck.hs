@@ -5,13 +5,13 @@
 -- * All instructions are executed in a common constant duration.
 --
 -- * Input command requires unknown latency in addition to it.
-module Brainfuck where
+module HS2BF.Brainfuck where
 
 import Control.Monad
 import Data.Array.IO
 import Data.Char
 import Data.Word
-import Util
+import HS2BF.Util
 
 -- | Original brainfuck + loop construct.
 data BF = BF [BFInst]

@@ -1,7 +1,7 @@
-module SRuntime where
+module HS2BF.SRuntime where
 
 import Data.List
-import SAM
+import HS2BF.SAM
 
 appTag = 0
 
@@ -827,11 +827,11 @@ rewrite r =
   SProc
     ("#rewrite" ++ r)
     ["from", "to"]
-    [ SAM.Alloc "test0",
+    [ Alloc "test0",
       Copy (Memory r 0) [Register "test0"],
-      SAM.Alloc "test1",
+      Alloc "test1",
       Copy (Register "from") [Register "test1"],
-      SAM.Alloc "flag",
+      Alloc "flag",
       Inline "#isEqual" ["test0", "test1", "flag"],
       Delete "test0",
       Delete "test1",

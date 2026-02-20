@@ -22,13 +22,14 @@ source-repository head
 
 library
   exposed-modules:
-      Brainfuck
-      Core
-      Front
-      GMachine
-      SAM
-      SRuntime
-      Util
+      HS2BF
+      HS2BF.Brainfuck
+      HS2BF.Core
+      HS2BF.Front
+      HS2BF.GMachine
+      HS2BF.SAM
+      HS2BF.SRuntime
+      HS2BF.Util
   other-modules:
       Paths_hs2bf
   hs-source-dirs:
@@ -67,6 +68,7 @@ test-suite hs2bf-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      ScriptGoldenSpec
       Paths_hs2bf
   hs-source-dirs:
       hs/test
