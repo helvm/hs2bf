@@ -50,6 +50,7 @@ test_golden = unsafePerformIO $ do
       let sam' = sam >>= SAM.simplify
 
       let bf = sam' >>= SAM.compile
+      let ws   = sam' >>= return . compileWS
 
       let run x =
             case runIdentity (runExceptT x) of
