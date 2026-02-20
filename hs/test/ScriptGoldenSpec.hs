@@ -6,6 +6,8 @@ import HS2BF
 import System.FilePath (takeBaseName, (<.>), (</>))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (findByExtension, goldenVsString)
+import HS2BF.Brainfuck as Brainfuck
+import System.IO.Unsafe (unsafePerformIO)
 
 inputFolder :: FilePath
 inputFolder = "examples"
