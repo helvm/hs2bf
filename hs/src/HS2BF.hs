@@ -12,8 +12,6 @@ import System.FilePath.Posix
 import System.IO
 import HS2BF.Util
 
-main = execCommand =<< liftM parseArgs getArgs
-
 -- | Complete description of /hs2bf/ behavior
 data Command
   = ShowMessage String
@@ -35,27 +33,6 @@ data Option = Option
     tolang :: Language
   }
 
--- | Parse arguments to 'Command'. Note this is a total function.
-parseArgs :: [String] -> Command
-parseArgs [] = ShowMessage $ version ++ "\n" ++ help
-parseArgs ("-v" : _) = ShowMessage version
-parseArgs ("--version" : _) = ShowMessage version
-parseArgs ("-h" : _) = ShowMessage $ version ++ "\n" ++ help
-parseArgs ("--help" : _) = ShowMessage $ version ++ "\n" ++ help
-parseArgs ("--run" : n : as) = Interpret (parseOption as) n
-parseArgs ("--make" : n : as) = Compile (parseOption as) n
-parseArgs _ = ShowMessage "Invalid command. See 'hs2bf --help' for usage."
-
-parseOption :: [String] -> Option
-parseOption [] = Option {addrSpace = 2, verbose = True, debug = False, tolang = LangBF}
-parseOption (term : xs) = case term of
-  '-' : 'S' : 'c' : xs -> o {tolang = LangCore xs}
-  '-' : 'S' : 'g' : xs -> o {tolang = LangGM xs}
-  '-' : 'S' : 's' : xs -> o {tolang = LangSAM xs}
-  "-Sb" -> o {tolang = LangBF}
-  _ -> error $ "unknown option:" ++ term
-  where
-    o = parseOption xs
 
 execCommand :: Command -> IO ()
 execCommand (ShowMessage x) = putStrLn x
@@ -104,38 +81,6 @@ partialChain opt from (c0, c1, g0, g1, s0, s1, b) = do
     LangSAM "" -> s0 sam
     LangSAM "f" -> s1 sam'
     LangBF -> b bf
-
-version :: String
-version = "Haskell to Brainfuck Compiler: version 0.6.2"
-
-help :: String
-help =
-  unlines $
-    [ "Usage: hs2bf <command>",
-      "",
-      "command:",
-      "  --help: show help",
-      "  --version: show version",
-      "  --run <module> <option>*: interpret <module>",
-      "  --make <module> <option>*: compile <module>",
-      "",
-      "option:",
-      "  -o <file> : output path (stdout if omitted)",
-      "  -Sc : to Core code",
-      "  -Scs: to Core code (simplified)",
-      "  -Sg : to GMachine",
-      "  -Sgr: to GMachine (simplified)",
-      "  -Ss : to SAM",
-      "  -Ssf: to SAM (most simplified)",
-      --    ,"  -Sr : to SCGR" -- not implemented
-      "  -Sb : to BF",
-      "  --addr n : use n byte for pointer arithmetic",
-      "  --debug : include detailed error message (this will make the program a LOT larger)",
-      "",
-      "examples:",
-      "  hs2bf --make path/to/App.hs -o app : compile App.hs to bf",
-      "  hs2bf --run Main -Sm : compile module Main to GMachine code and interpret it"
-    ]
 
 analyzeName :: String -> FilePath -> (String, Front.ModuleEnv)
 analyzeName n lib = (takeBaseName n, Front.ModuleEnv [dirPrefix ++ takeDirectory n, lib])
