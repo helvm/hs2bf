@@ -1,0 +1,216 @@
+Halt:
+    Pack 2 0
+    Update 1
+
+Output:
+    PushArg 2
+    PushArg 2
+    Pack 1 2
+    PushArg 2
+    PushSC "seq"
+    MkApp
+    MkApp
+    Update 3
+    Pop 2
+
+XCons:
+    PushArg 2
+    PushArg 2
+    Pack 0 2
+    Update 3
+    Pop 2
+
+XNil:
+    Pack 1 0
+    Update 1
+
+XT1:
+    PushArg 1
+    Pack 0 1
+    Update 2
+    Pop 1
+
+XT2:
+    PushArg 2
+    PushArg 2
+    Pack 0 2
+    Update 3
+    Pop 2
+
+addByte:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    PushSC "addByte_"
+    Swap
+
+addByteRaw:
+    PushArg 2
+    PushArg 2
+    Arith AAdd
+    Slide 3
+
+addByte_:
+    UnPack 2
+    Push 0
+    Push 2
+    PushSC "addByteRaw"
+    MkApp
+    MkApp
+    Push 1
+    PushSC "seq"
+    MkApp
+    MkApp
+    Push 2
+    PushSC "seq"
+    MkApp
+    MkApp
+    Slide 2
+    Update 3
+    Pop 2
+
+main:
+    PushSC "XNil"
+    PushByte 3
+    PushSC "XCons"
+    MkApp
+    MkApp
+    PushByte 2
+    PushSC "XCons"
+    MkApp
+    MkApp
+    PushByte 1
+    PushSC "XCons"
+    MkApp
+    MkApp
+    PushSC "showByte1"
+    PushSC "map"
+    MkApp
+    MkApp
+    PushSC "Halt"
+    PushSC "outputStr"
+    MkApp
+    MkApp
+    Update 1
+
+map:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    PushSC "map_"
+    Swap
+
+map_:
+    UnPack 2
+    Push 0
+    PushSC "map__d0_"
+    Swap
+
+map__d0_:
+    Case
+        0 ->
+            UnPack 2
+            Push 2
+            PushSC "map__d0__d0_"
+            Swap
+        1 ->
+            UnPack 0
+            PushSC "XNil"
+            Slide 2
+            Update 3
+            Pop 2
+
+map__d0__d0_:
+    UnPack 2
+    Push 0
+    Push 6
+    PushSC "map"
+    MkApp
+    MkApp
+    Push 2
+    Push 7
+    MkApp
+    PushSC "XCons"
+    MkApp
+    MkApp
+    Slide 6
+    Update 3
+    Pop 2
+
+outputStr:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    PushSC "outputStr_"
+    Swap
+
+outputStr_:
+    UnPack 2
+    Push 0
+    PushSC "outputStr__d0_"
+    Swap
+
+outputStr__d0_:
+    Case
+        0 ->
+            UnPack 2
+            Push 2
+            PushSC "outputStr__d0__d0_"
+            Swap
+        1 ->
+            UnPack 0
+            Push 1
+            Slide 2
+            Update 3
+            Pop 2
+
+outputStr__d0__d0_:
+    UnPack 2
+    Push 0
+    Push 6
+    PushSC "outputStr"
+    MkApp
+    MkApp
+    Push 2
+    PushSC "Output"
+    MkApp
+    MkApp
+    Slide 6
+    Update 3
+    Pop 2
+
+seq:
+    PushArg 1
+    Push 0
+    PushSC "seq_"
+    Swap
+
+seq_:
+    Update 1
+    Pop 1
+    PushArg 2
+    Slide 3
+
+showByte1:
+    PushArg 1
+    PushSC "XT1"
+    MkApp
+    PushSC "showByte1_"
+    Swap
+
+showByte1_:
+    UnPack 1
+    Push 0
+    PushByte 48
+    PushSC "addByte"
+    MkApp
+    MkApp
+    Slide 1
+    Update 2
+    Pop 1

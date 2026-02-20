@@ -1,0 +1,60 @@
+Halt:
+    Pack 2 0
+    Update 1
+
+Output:
+    PushArg 2
+    PushArg 2
+    Pack 1 2
+    PushArg 2
+    PushSC "seq"
+    MkApp
+    MkApp
+    Update 3
+    Pop 2
+
+XT1:
+    PushArg 1
+    Pack 0 1
+    Update 2
+    Pop 1
+
+_l_main_f_:
+    PushArg 1
+    PushSC "XT1"
+    MkApp
+    PushSC "_l_main_f__"
+    Swap
+
+_l_main_f__:
+    UnPack 1
+    Push 0
+    PushSC "Halt"
+    Push 1
+    PushSC "Output"
+    MkApp
+    MkApp
+    Slide 2
+    Update 2
+    Pop 1
+
+main:
+    Alloc 1
+    PushSC "_l_main_f_"
+    PushByte 126
+    Push 1
+    MkApp
+    Slide 1
+    Update 1
+
+seq:
+    PushArg 1
+    Push 0
+    PushSC "seq_"
+    Swap
+
+seq_:
+    Update 1
+    Pop 1
+    PushArg 2
+    Slide 3

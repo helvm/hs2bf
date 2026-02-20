@@ -1,0 +1,7 @@
+Halt:
+    Pack 2 0
+    Update 1
+
+main:
+    PushSC "Halt"
+    Update 1

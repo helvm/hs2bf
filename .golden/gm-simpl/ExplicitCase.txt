@@ -1,0 +1,61 @@
+Bar:
+    Pack 1 0
+    Update 1
+
+Halt:
+    Pack 2 0
+    Update 1
+
+Output:
+    PushArg 2
+    PushArg 2
+    Pack 1 2
+    PushArg 2
+    PushSC "seq"
+    MkApp
+    MkApp
+    Update 3
+    Pop 2
+
+main:
+    PushSC "Bar"
+    PushSC "main_"
+    Swap
+
+main_:
+    Case
+        0 ->
+            UnPack 1
+            PushSC "Halt"
+            PushByte 42
+            PushSC "Output"
+            MkApp
+            MkApp
+            Slide 1
+        1 ->
+            UnPack 0
+            PushSC "Halt"
+            PushByte 111
+            PushSC "Output"
+            MkApp
+            MkApp
+        2 ->
+            UnPack 0
+            PushSC "Halt"
+            PushByte 120
+            PushSC "Output"
+            MkApp
+            MkApp
+    Update 1
+
+seq:
+    PushArg 1
+    Push 0
+    PushSC "seq_"
+    Swap
+
+seq_:
+    Update 1
+    Pop 1
+    PushArg 2
+    Slide 3

@@ -7,6 +7,10 @@ import System.FilePath (takeBaseName, (<.>), (</>))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (findByExtension, goldenVsString)
 import HS2BF.Brainfuck as Brainfuck
+import HS2BF.SAM as SAM
+import HS2BF.GMachine as GMachine
+import HS2BF.Core as Core
+import HS2BF.Front as Front
 import System.IO.Unsafe (unsafePerformIO)
 import qualified Data.ByteString.Lazy.UTF8 as BSL
 import Control.Monad.Trans.Except (runExceptT)
@@ -30,20 +34,40 @@ test_golden = unsafePerformIO $ do
     createTest :: FilePath -> IO TestTree
     createTest inFile = do
         let baseName = takeBaseName inFile
-        let opt = Option { addrSpace = 2, verbose = False, debug = False, tolang = LangBF }
-        let goldenFile = ".golden" </> "bf" </> baseName <.> "bf"
+        dir <- Paths_hs2bf.getDataDir
 
-        exceptT <- partialChain opt inFile $
-            ( error "Core not needed", error "Core not needed",
-              error "GMachine not needed", error "GMachine not needed",
-              error "SAM not needed", error "SAM not needed",
-              pure
-            )
+        let (modName, env) = analyzeName inFile dir
 
-        let eResult = runIdentity $ runExceptT exceptT
+        xs  <- Front.collectModules env modName
+        let cr  = xs >>= Front.compile
 
-        output <- case eResult of
-            Left errs -> error $ "Partial chain failed: " ++ show errs
-            Right bf  -> pure $ BSL.fromString $ Brainfuck.pprint bf
+        let cr' = cr >>= Core.simplify
 
-        pure $ goldenVsString ("Brainfuck output: " ++ baseName) goldenFile (pure output)
+        let gm  = cr' >>= Core.compile
+        let gm' = gm  >>= GMachine.simplify
+
+        let sam  = gm' >>= GMachine.compile
+        let sam' = sam >>= SAM.simplify
+
+        let bf  = sam' >>= SAM.compile
+
+        let run x =
+                case runIdentity (runExceptT x) of
+                    Left errs -> error (show errs)
+                    Right v   -> v
+
+        let mkGolden name ext val =
+                goldenVsString
+                    name
+                    (".golden" </> name </> baseName <.> ext)
+                    (pure $ BSL.fromString val)
+
+        pure $ testGroup baseName
+            [ mkGolden "core"        "core"        (Core.pprint        (run cr))
+            , mkGolden "core-simpl"  "core"  (Core.pprint        (run cr'))
+            , mkGolden "gm"          "gm"          (GMachine.pprint    (run gm))
+            , mkGolden "gm-simpl"    "gm"    (GMachine.pprint    (run gm'))
+            , mkGolden "sam"         "sam"         (SAM.pprint         (run sam))
+            , mkGolden "sam-simpl"   "sam"   (SAM.pprint         (run sam'))
+            , mkGolden "bf"          "bf"          (Brainfuck.pprint   (run bf))
+            ]

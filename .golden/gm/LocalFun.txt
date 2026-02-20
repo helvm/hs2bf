@@ -1,0 +1,955 @@
+!!:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 1
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 2
+                    PushByte 0
+                    Push 1
+                    PushSC "eqByte"
+                    MkApp
+                    MkApp
+                    Reduce RAny
+                    Case
+                        0 ->
+                            UnPack 0
+                            PushSC "otherwise"
+                            Reduce RAny
+                            Case
+                                0 ->
+                                    UnPack 0
+                                    PushSC "undefined"
+                                    Slide 0
+                                1 ->
+                                    UnPack 0
+                                    PushByte 1
+                                    Push 1
+                                    PushSC "subByte"
+                                    MkApp
+                                    MkApp
+                                    Push 1
+                                    PushSC "!!"
+                                    MkApp
+                                    MkApp
+                                    Slide 0
+                            Slide 0
+                        1 ->
+                            UnPack 0
+                            Push 1
+                            Slide 0
+                    Slide 2
+            Slide 2
+    Update 3
+    Pop 2
+
+$:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Push 2
+            MkApp
+            Slide 2
+    Update 3
+    Pop 2
+
+$!:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Push 2
+            MkApp
+            Push 1
+            PushSC "seq"
+            MkApp
+            MkApp
+            Slide 2
+    Update 3
+    Pop 2
+
+&&:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 1
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 0
+                    PushSC "False"
+                    Slide 0
+                1 ->
+                    UnPack 0
+                    Push 0
+                    Slide 0
+            Slide 2
+    Update 3
+    Pop 2
+
+++:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 1
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 2
+                    Push 2
+                    Push 1
+                    PushSC "++"
+                    MkApp
+                    MkApp
+                    Push 2
+                    PushSC "XCons"
+                    MkApp
+                    MkApp
+                    Slide 2
+                1 ->
+                    UnPack 0
+                    Push 0
+                    Slide 0
+            Slide 2
+    Update 3
+    Pop 2
+
+.:
+    PushArg 3
+    PushArg 3
+    PushArg 3
+    PushSC "XT3"
+    MkApp
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 3
+            Push 0
+            Push 2
+            MkApp
+            Push 3
+            MkApp
+            Slide 3
+    Update 4
+    Pop 3
+
+EQ:
+    Pack 0 0
+    Update 1
+    Pop 0
+
+False:
+    Pack 0 0
+    Update 1
+    Pop 0
+
+GT:
+    Pack 2 0
+    Update 1
+    Pop 0
+
+Halt:
+    Pack 2 0
+    Update 1
+    Pop 0
+
+Input:
+    PushArg 1
+    Pack 0 1
+    Update 2
+    Pop 1
+
+Just:
+    PushArg 1
+    Pack 1 1
+    Update 2
+    Pop 1
+
+LT:
+    Pack 1 0
+    Update 1
+    Pop 0
+
+Left:
+    PushArg 1
+    Pack 0 1
+    Update 2
+    Pop 1
+
+Nothing:
+    Pack 0 0
+    Update 1
+    Pop 0
+
+Output:
+    PushArg 2
+    PushArg 2
+    Pack 1 2
+    PushArg 2
+    PushSC "seq"
+    MkApp
+    MkApp
+    Update 3
+    Pop 2
+
+Right:
+    PushArg 1
+    Pack 1 1
+    Update 2
+    Pop 1
+
+True:
+    Pack 1 0
+    Update 1
+    Pop 0
+
+XCons:
+    PushArg 2
+    PushArg 2
+    Pack 0 2
+    Update 3
+    Pop 2
+
+XNil:
+    Pack 1 0
+    Update 1
+    Pop 0
+
+XT1:
+    PushArg 1
+    Pack 0 1
+    Update 2
+    Pop 1
+
+XT2:
+    PushArg 2
+    PushArg 2
+    Pack 0 2
+    Update 3
+    Pop 2
+
+XT3:
+    PushArg 3
+    PushArg 3
+    PushArg 3
+    Pack 0 3
+    Update 4
+    Pop 3
+
+_l_main_f_:
+    PushArg 1
+    PushSC "XT1"
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 1
+            Push 0
+            PushSC "Halt"
+            Push 1
+            PushSC "Output"
+            MkApp
+            MkApp
+            Slide 1
+            Slide 1
+    Update 2
+    Pop 1
+
+addByte:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Push 2
+            PushSC "addByteRaw"
+            MkApp
+            MkApp
+            Push 1
+            PushSC "seq"
+            MkApp
+            MkApp
+            Push 2
+            PushSC "seq"
+            MkApp
+            MkApp
+            Slide 2
+    Update 3
+    Pop 2
+
+addByteRaw:
+    PushArg 2
+    PushArg 2
+    Arith AAdd
+    Slide 3
+
+cmpByte:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Push 2
+            PushSC "cmpByteRaw"
+            MkApp
+            MkApp
+            Push 1
+            PushSC "seq"
+            MkApp
+            MkApp
+            Push 2
+            PushSC "seq"
+            MkApp
+            MkApp
+            Slide 2
+    Update 3
+    Pop 2
+
+cmpByteRaw:
+    PushArg 2
+    PushArg 2
+    Arith CCmp
+    Slide 3
+
+eqByte:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Push 2
+            PushSC "cmpByte"
+            MkApp
+            MkApp
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 0
+                    PushSC "True"
+                    Slide 0
+                1 ->
+                    UnPack 0
+                    PushSC "False"
+                    Slide 0
+                2 ->
+                    UnPack 0
+                    PushSC "False"
+                    Slide 0
+            Slide 1
+            Slide 2
+    Update 3
+    Pop 2
+
+filter:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 2
+                    Push 2
+                    Reduce RAny
+                    Case
+                        0 ->
+                            UnPack 2
+                            Push 1
+                            Push 6
+                            MkApp
+                            Reduce RAny
+                            Case
+                                0 ->
+                                    UnPack 0
+                                    PushSC "otherwise"
+                                    Reduce RAny
+                                    Case
+                                        0 ->
+                                            UnPack 0
+                                            PushSC "undefined"
+                                            Slide 0
+                                        1 ->
+                                            UnPack 0
+                                            Push 0
+                                            Push 6
+                                            PushSC "filter"
+                                            MkApp
+                                            MkApp
+                                            Slide 0
+                                    Slide 0
+                                1 ->
+                                    UnPack 0
+                                    Push 0
+                                    Push 6
+                                    PushSC "filter"
+                                    MkApp
+                                    MkApp
+                                    Push 2
+                                    PushSC "XCons"
+                                    MkApp
+                                    MkApp
+                                    Slide 0
+                            Slide 2
+                    Slide 2
+                1 ->
+                    UnPack 0
+                    PushSC "XNil"
+                    Slide 0
+            Slide 2
+    Update 3
+    Pop 2
+
+flip:
+    PushArg 3
+    PushArg 3
+    PushArg 3
+    PushSC "XT3"
+    MkApp
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 3
+            Push 1
+            Push 1
+            Push 4
+            MkApp
+            MkApp
+            Slide 3
+    Update 4
+    Pop 3
+
+foldl:
+    PushArg 3
+    PushArg 3
+    PushArg 3
+    PushSC "XT3"
+    MkApp
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 3
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 2
+                    Push 2
+                    Reduce RAny
+                    Case
+                        0 ->
+                            UnPack 2
+                            Push 0
+                            Push 6
+                            Push 3
+                            Push 9
+                            MkApp
+                            MkApp
+                            Push 8
+                            PushSC "foldl"
+                            MkApp
+                            MkApp
+                            MkApp
+                            Slide 2
+                    Slide 2
+                1 ->
+                    UnPack 0
+                    Push 1
+                    Slide 0
+            Slide 3
+    Update 4
+    Pop 3
+
+foldr:
+    PushArg 3
+    PushArg 3
+    PushArg 3
+    PushSC "XT3"
+    MkApp
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 3
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 2
+                    Push 2
+                    Reduce RAny
+                    Case
+                        0 ->
+                            UnPack 2
+                            Push 0
+                            Push 6
+                            Push 8
+                            PushSC "foldr"
+                            MkApp
+                            MkApp
+                            MkApp
+                            Push 2
+                            Push 8
+                            MkApp
+                            MkApp
+                            Slide 2
+                    Slide 2
+                1 ->
+                    UnPack 0
+                    Push 1
+                    Slide 0
+            Slide 3
+    Update 4
+    Pop 3
+
+geByte:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Push 2
+            PushSC "cmpByte"
+            MkApp
+            MkApp
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 0
+                    PushSC "True"
+                    Slide 0
+                1 ->
+                    UnPack 0
+                    PushSC "False"
+                    Slide 0
+                2 ->
+                    UnPack 0
+                    PushSC "True"
+                    Slide 0
+            Slide 1
+            Slide 2
+    Update 3
+    Pop 2
+
+gtByte:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Push 2
+            PushSC "cmpByte"
+            MkApp
+            MkApp
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 0
+                    PushSC "False"
+                    Slide 0
+                1 ->
+                    UnPack 0
+                    PushSC "False"
+                    Slide 0
+                2 ->
+                    UnPack 0
+                    PushSC "True"
+                    Slide 0
+            Slide 1
+            Slide 2
+    Update 3
+    Pop 2
+
+head:
+    PushArg 1
+    PushSC "XT1"
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 1
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 2
+                    Push 1
+                    Slide 2
+            Slide 1
+    Update 2
+    Pop 1
+
+id:
+    PushArg 1
+    PushSC "XT1"
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 1
+            Push 0
+            Slide 1
+    Update 2
+    Pop 1
+
+leByte:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Push 2
+            PushSC "cmpByte"
+            MkApp
+            MkApp
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 0
+                    PushSC "True"
+                    Slide 0
+                1 ->
+                    UnPack 0
+                    PushSC "True"
+                    Slide 0
+                2 ->
+                    UnPack 0
+                    PushSC "False"
+                    Slide 0
+            Slide 1
+            Slide 2
+    Update 3
+    Pop 2
+
+length:
+    PushArg 1
+    PushSC "XT1"
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 1
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 2
+                    Push 2
+                    Reduce RAny
+                    Case
+                        0 ->
+                            UnPack 2
+                            Push 0
+                            PushSC "length"
+                            MkApp
+                            PushByte 1
+                            PushSC "addByte"
+                            MkApp
+                            MkApp
+                            Slide 2
+                    Slide 2
+                1 ->
+                    UnPack 0
+                    PushByte 0
+                    Slide 0
+            Slide 1
+    Update 2
+    Pop 1
+
+ltByte:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Push 2
+            PushSC "cmpByte"
+            MkApp
+            MkApp
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 0
+                    PushSC "False"
+                    Slide 0
+                1 ->
+                    UnPack 0
+                    PushSC "True"
+                    Slide 0
+                2 ->
+                    UnPack 0
+                    PushSC "False"
+                    Slide 0
+            Slide 1
+            Slide 2
+    Update 3
+    Pop 2
+
+main:
+    Alloc 1
+    PushSC "_l_main_f_"
+    PushByte 126
+    Push 1
+    MkApp
+    Slide 1
+    Update 1
+    Pop 0
+
+map:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 2
+                    Push 2
+                    Reduce RAny
+                    Case
+                        0 ->
+                            UnPack 2
+                            Push 0
+                            Push 6
+                            PushSC "map"
+                            MkApp
+                            MkApp
+                            Push 2
+                            Push 7
+                            MkApp
+                            PushSC "XCons"
+                            MkApp
+                            MkApp
+                            Slide 2
+                    Slide 2
+                1 ->
+                    UnPack 0
+                    PushSC "XNil"
+                    Slide 0
+            Slide 2
+    Update 3
+    Pop 2
+
+otherwise:
+    PushSC "True"
+    Update 1
+    Pop 0
+
+reverse:
+    PushArg 1
+    PushSC "XT1"
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 1
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 2
+                    Push 2
+                    Reduce RAny
+                    Case
+                        0 ->
+                            UnPack 2
+                            PushSC "XNil"
+                            Push 2
+                            PushSC "XCons"
+                            MkApp
+                            MkApp
+                            Push 1
+                            PushSC "reverse"
+                            MkApp
+                            PushSC "++"
+                            MkApp
+                            MkApp
+                            Slide 2
+                    Slide 2
+                1 ->
+                    UnPack 0
+                    PushSC "XNil"
+                    Slide 0
+            Slide 1
+    Update 2
+    Pop 1
+
+seq:
+    PushArg 1
+    Push 0
+    Reduce RAny
+    Update 1
+    Pop 1
+    PushArg 2
+    Slide 3
+
+subByte:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 0
+            Push 2
+            PushSC "subByteRaw"
+            MkApp
+            MkApp
+            Push 1
+            PushSC "seq"
+            MkApp
+            MkApp
+            Push 2
+            PushSC "seq"
+            MkApp
+            MkApp
+            Slide 2
+    Update 3
+    Pop 2
+
+subByteRaw:
+    PushArg 2
+    PushArg 2
+    Arith ASub
+    Slide 3
+
+tail:
+    PushArg 1
+    PushSC "XT1"
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 1
+            Push 0
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 2
+                    Push 0
+                    Slide 2
+            Slide 1
+    Update 2
+    Pop 1
+
+undefined:
+    UError "undefined"
+
+||:
+    PushArg 2
+    PushArg 2
+    PushSC "XT2"
+    MkApp
+    MkApp
+    Reduce RAny
+    Case
+        0 ->
+            UnPack 2
+            Push 1
+            Reduce RAny
+            Case
+                0 ->
+                    UnPack 0
+                    Push 0
+                    Slide 0
+                1 ->
+                    UnPack 0
+                    PushSC "True"
+                    Slide 0
+            Slide 2
+    Update 3
+    Pop 2
