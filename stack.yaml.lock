@@ -3,7 +3,14 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/topics/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: ormolu-0.7.5.0@sha256:2e26c9e466cfdc878442bfb87ff53151d3a112e54a802568059b29d4353bcee3,5986
+    pantry-tree:
+      sha256: 8b0245ed97f6239518a62145eb7140bae4c8ee05d46b550ce155d8500274aa70
+      size: 100728
+  original:
+    hackage: ormolu-0.7.5.0
 snapshots:
 - completed:
     sha256: 72cdd5851794184138551f43f0897c28f1a5acdda303b266aa9e910461103b3c
