@@ -11,6 +11,13 @@ packages:
       size: 100728
   original:
     hackage: ormolu-0.7.5.0
+- completed:
+    hackage: apply-refact-0.14.0.0@sha256:0c1481f3c8ceb96187bd3da4b4c6e3400811e5a4c2e9e067bec9c9cd755ce1a8,5590
+    pantry-tree:
+      sha256: f388aee599dc8247cd0683f2c8abb2c824f8f27760e1f076e30992d5968120be
+      size: 96201
+  original:
+    hackage: apply-refact-0.14.0.0
 snapshots:
 - completed:
     sha256: 72cdd5851794184138551f43f0897c28f1a5acdda303b266aa9e910461103b3c

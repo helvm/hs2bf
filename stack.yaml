@@ -1,9 +1,10 @@
 resolver: lts-24.28
 
+allow-newer: true
+
 packages:
   - .
 
 extra-deps:
   - ormolu-0.7.5.0
-
-allow-newer: true
+  - apply-refact-0.14.0.0
