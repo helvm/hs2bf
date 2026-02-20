@@ -51,12 +51,11 @@ test_golden = unsafePerformIO $ do
       let sam' = sam >>= SAM.simplify
 
       let bf = sam' >>= SAM.compile
-      let ws = compileWS (run sam')
-
       let run x =
             case runIdentity (runExceptT x) of
               Left errs -> error (show errs)
               Right v -> v
+      let ws = compileWS (run sam')
 
       let mkGolden name ext val =
             goldenVsString
