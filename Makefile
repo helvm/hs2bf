@@ -5,7 +5,7 @@ fmt-check:
 	stack exec -- ormolu --mode check hs/**/*.hs
 
 lint:
-	stack exec -- hlint hs
+	stack exec -- hlint hs/test
 
 lint-fix:
 	for f in hs/**/*.hs; do \

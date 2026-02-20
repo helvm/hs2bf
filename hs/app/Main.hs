@@ -12,19 +12,18 @@
 -- See the source of 'help' for detailed description\/specification of features.
 module Main where
 
-import qualified HS2BF.Brainfuck as Brainfuck
 import Control.Monad
+import HS2BF
+import qualified HS2BF.Brainfuck as Brainfuck
 import qualified HS2BF.Core as Core
 import qualified HS2BF.Front as Front
 import qualified HS2BF.GMachine as GMachine
-import qualified Paths_hs2bf
 import qualified HS2BF.SAM as SAM
+import HS2BF.Util
+import qualified Paths_hs2bf
 import System.Environment
 import System.FilePath.Posix
 import System.IO
-import HS2BF.Util
-
-import HS2BF
 
 main = execCommand =<< liftM parseArgs getArgs
 
@@ -81,4 +80,3 @@ help =
       "  hs2bf --make path/to/App.hs -o app : compile App.hs to bf",
       "  hs2bf --run Main -Sm : compile module Main to GMachine code and interpret it"
     ]
-

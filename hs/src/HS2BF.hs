@@ -1,16 +1,16 @@
 module HS2BF where
 
-import qualified HS2BF.Brainfuck as Brainfuck
 import Control.Monad
+import qualified HS2BF.Brainfuck as Brainfuck
 import qualified HS2BF.Core as Core
 import qualified HS2BF.Front as Front
 import qualified HS2BF.GMachine as GMachine
-import qualified Paths_hs2bf
 import qualified HS2BF.SAM as SAM
+import HS2BF.Util
+import qualified Paths_hs2bf
 import System.Environment
 import System.FilePath.Posix
 import System.IO
-import HS2BF.Util
 
 -- | Complete description of /hs2bf/ behavior
 data Command
@@ -32,7 +32,6 @@ data Option = Option
     debug :: Bool,
     tolang :: Language
   }
-
 
 execCommand :: Command -> IO ()
 execCommand (ShowMessage x) = putStrLn x
