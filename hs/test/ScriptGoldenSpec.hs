@@ -8,6 +8,7 @@ import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (findByExtension, goldenVsString)
 import HS2BF.Brainfuck as Brainfuck
 import System.IO.Unsafe (unsafePerformIO)
+import qualified Data.ByteString.Lazy.UTF8 as BSL
 
 inputFolder :: FilePath
 inputFolder = "examples"
