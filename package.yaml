@@ -78,6 +78,7 @@ tests:
       - filepath
       - utf8-string
       - text
+      - transformers
 
     build-tools:
       - tasty-discover:tasty-discover

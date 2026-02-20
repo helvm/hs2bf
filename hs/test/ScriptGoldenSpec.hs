@@ -9,6 +9,8 @@ import Test.Tasty.Golden (findByExtension, goldenVsString)
 import HS2BF.Brainfuck as Brainfuck
 import System.IO.Unsafe (unsafePerformIO)
 import qualified Data.ByteString.Lazy.UTF8 as BSL
+import Control.Monad.Trans.Except (runExceptT)
+import Data.Functor.Identity (runIdentity)
 
 inputFolder :: FilePath
 inputFolder = "examples"
@@ -29,12 +31,19 @@ test_golden = unsafePerformIO $ do
     createTest inFile = do
         let baseName = takeBaseName inFile
         let opt = Option { addrSpace = 2, verbose = False, debug = False, tolang = LangBF }
-        let goldenFile = ".golden" </> "hs2bf" </> baseName <.> "bf"
-        let outputAction :: IO BSL.ByteString
-            outputAction = partialChain opt inFile $
-                (error "Core not needed", error "Core not needed",
-                 error "GMachine not needed", error "GMachine not needed",
-                 error "SAM not needed", error "SAM not needed",
-                 \bf -> pure $ BSL.fromString $ Brainfuck.pprint bf
-                )
-        pure $ goldenVsString ("Brainfuck output: " ++ baseName) goldenFile outputAction
+        let goldenFile = ".golden" </> "bf" </> baseName <.> "bf"
+
+        exceptT <- partialChain opt inFile $
+            ( error "Core not needed", error "Core not needed",
+              error "GMachine not needed", error "GMachine not needed",
+              error "SAM not needed", error "SAM not needed",
+              pure
+            )
+
+        let eResult = runIdentity $ runExceptT exceptT
+
+        output <- case eResult of
+            Left errs -> error $ "Partial chain failed: " ++ show errs
+            Right bf  -> pure $ BSL.fromString $ Brainfuck.pprint bf
+
+        pure $ goldenVsString ("Brainfuck output: " ++ baseName) goldenFile (pure output)
