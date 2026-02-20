@@ -80,7 +80,7 @@ test-suite hs2bf-test
     , base >=4.7 && <5
     , bytestring
     , filepath
-    , hs2lazy
+    , hs2bf
     , hspec
     , mtl
     , parsec

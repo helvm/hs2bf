@@ -68,7 +68,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-      - hs2lazy
+      - hs2bf
       - tasty
       - tasty-hunit
       - tasty-hspec
