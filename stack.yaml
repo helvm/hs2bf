@@ -1,10 +1,7 @@
-resolver: nightly-2026-02-10
-
-allow-newer: true
-
+resolver: lts-24.28
+compiler-check: match-exact
 packages:
   - .
-
 extra-deps:
-  - ormolu-0.7.5.0
+  - ormolu-0.6.3.0
   - apply-refact-0.14.0.0
