@@ -51,7 +51,7 @@ test_golden = unsafePerformIO $ do
       let sam' = sam >>= SAM.simplify
 
       let bf = sam' >>= SAM.compile
-      let ws = sam' >>= compileWS
+      let ws = compileWS (run sam')
 
       let run x =
             case runIdentity (runExceptT x) of
@@ -74,5 +74,5 @@ test_golden = unsafePerformIO $ do
             mkGolden "sam" "sam" (SAM.pprint (run sam)),
             mkGolden "sam-simpl" "sam" (SAM.pprint (run sam')),
             mkGolden "bf" "bf" (Brainfuck.pprint (run bf)),
-            mkGolden "ws" "ws" (pprintWS (run ws))
+            mkGolden "ws" "ws" (pprintWS ws)
           ]
