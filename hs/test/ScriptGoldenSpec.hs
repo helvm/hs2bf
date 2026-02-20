@@ -71,5 +71,6 @@ test_golden = unsafePerformIO $ do
             mkGolden "gm-simpl" "gm" (GMachine.pprint (run gm')),
             mkGolden "sam" "sam" (SAM.pprint (run sam)),
             mkGolden "sam-simpl" "sam" (SAM.pprint (run sam')),
-            mkGolden "bf" "bf" (Brainfuck.pprint (run bf))
+            mkGolden "bf" "bf" (Brainfuck.pprint (run bf)),
+            mkGolden "ws" "ws" (pprintWS ws)
           ]
