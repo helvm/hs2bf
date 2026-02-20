@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: ormolu-0.7.5.0@sha256:2e26c9e466cfdc878442bfb87ff53151d3a112e54a802568059b29d4353bcee3,5986
+    hackage: ormolu-0.6.0.1@sha256:e11242736583effc7a8a96821fb9cc555d1c45e3f13c1d202fb97572239baeb1,5919
     pantry-tree:
-      sha256: 8b0245ed97f6239518a62145eb7140bae4c8ee05d46b550ce155d8500274aa70
-      size: 100728
+      sha256: 38df8e9a679eb4a80f6f9b63f6ec90d5bd0f4c6acd34f6d9d799541504fe392c
+      size: 94980
   original:
-    hackage: ormolu-0.7.5.0
+    hackage: ormolu-0.6.0.1
 - completed:
     hackage: apply-refact-0.14.0.0@sha256:0c1481f3c8ceb96187bd3da4b4c6e3400811e5a4c2e9e067bec9c9cd755ce1a8,5590
     pantry-tree:
@@ -20,7 +20,7 @@ packages:
     hackage: apply-refact-0.14.0.0
 snapshots:
 - completed:
-    sha256: 41cc354b2fc81c6b039b4e581ff9dbae07fda94b0361ca08f3df5637da799856
-    size: 721525
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2026/2/10.yaml
-  original: nightly-2026-02-10
+    sha256: 72cdd5851794184138551f43f0897c28f1a5acdda303b266aa9e910461103b3c
+    size: 726784
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/24/28.yaml
+  original: lts-24.28
