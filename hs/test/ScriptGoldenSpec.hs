@@ -1,37 +1,35 @@
 module ScriptGoldenSpec (test_golden) where
 
 import qualified Data.ByteString.Lazy as BSL
-import qualified Data.ByteString.Lazy.UTF8 as BSL
-import qualified Data.Text.Lazy as TL
-import qualified Data.Text.Lazy.Encoding as TL
-import HS2Lazy
-import HS2Lazy.Compiler.Lambda
-import HS2Lazy.Syntax.Lambda
+import qualified Paths_hs2bf
+import HS2BF
 import System.FilePath (takeBaseName, (<.>), (</>))
-import System.IO.Unsafe (unsafePerformIO)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (findByExtension, goldenVsString)
-import Text.Pretty.Simple
 
-inputFiles :: [FilePath]
-inputFiles = unsafePerformIO (findByExtension [".hs"] ("examples"))
+inputFolder :: FilePath
+inputFolder = "examples"
+
+inputFiles :: IO [FilePath]
+inputFiles = findByExtension [".hs"] inputFolder
 
 test_golden :: TestTree
-test_golden =
-  testGroup "Golden tests" $
-    map createTests inputFiles
+test_golden = unsafePerformIO $ do
+    files <- inputFiles
+    tests <- mapM createTest files
+    pure $ testGroup "Golden tests" tests
+
   where
-    createTests inFile = unsafePerformIO $ do
-      source <- BSL.readFile inFile
-      let result = compile $ (BSL.toString source)
-      let ((expandedSki, compiledSki), (optimizedExpr, expandedExpr, compiledExpr)) = result
-      let lambda = compileToLambda optimizedExpr
-      let baseName = takeBaseName inFile
-      pure $
-        testGroup
-          baseName
-          [ goldenVsString
-              "SKI output"
-              (".golden" </> "scripts" </> "lazy" </> "expanded" </> baseName <.> "lazy")
-              (pure $ BSL.fromString $ renderSKI expandedSki)
-          ]
+    createTest :: FilePath -> IO TestTree
+    createTest inFile = do
+        let baseName = takeBaseName inFile
+        let opt = Option { addrSpace = 2, verbose = False, debug = False, tolang = LangBF }
+        output <- partialChain opt inFile $
+            (error "Core not needed", error "Core not needed",
+             error "GMachine not needed", error "GMachine not needed",
+             error "SAM not needed", error "SAM not needed",
+             \bf -> do
+                 pure $ BSL.fromStrict $ Brainfuck.render bf
+            )
+        let goldenFile = ".golden" </> "hs2bf" </> baseName <.> "bf"
+        pure $ goldenVsString ("Brainfuck output: " ++ baseName) goldenFile output
