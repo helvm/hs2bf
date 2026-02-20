@@ -28,6 +28,7 @@ library
       HS2BF.Front
       HS2BF.GMachine
       HS2BF.SAM
+      HS2BF.SAM2WS
       HS2BF.SRuntime
       HS2BF.Util
   other-modules:
