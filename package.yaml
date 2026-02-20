@@ -67,6 +67,17 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    dependencies:
+      - hs2lazy
+      - tasty
+      - tasty-hunit
+      - tasty-hspec
+      - tasty-golden
+      - hspec
+      - bytestring
+      - filepath
+      - utf8-string
+      - text
 
     build-tools:
       - tasty-discover:tasty-discover

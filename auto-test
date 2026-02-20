@@ -6,7 +6,7 @@
 #   IO ()
 function test_bf
     set hs_path $argv[1]
-    set bf_path test/(basename $argv[1] .hs).bf
+    set bf_path examples/(basename $argv[1] .hs).bf
     set expected $argv[2]
 
     echo "=== $hs_path ==="
@@ -35,15 +35,15 @@ function test_bf
 end
 
 
-test_bf test/Halt.hs ""
-and test_bf test/Const.hs "~"
-and test_bf test/ExplicitCase.hs "o"
-and test_bf test/Hello.hs "Hello!"
-and test_bf test/LocalFun.hs "~"
-and test_bf test/Lambda.hs "A"
-and test_bf test/Arithmetic.hs "o"
-and test_bf test/ShowList.hs "123"
-and test_bf test/QuickSort.hs "best"
-# and test_bf test/TypeClass.hs
-# and test_bf test/ConstPattern.hs
-# and test_bf test/
+test_bf examples/Halt.hs ""
+and test_bf examples/Const.hs "~"
+and test_bf examples/ExplicitCase.hs "o"
+and test_bf examples/Hello.hs "Hello!"
+and test_bf examples/LocalFun.hs "~"
+and test_bf examples/Lambda.hs "A"
+and test_bf examples/Arithmetic.hs "o"
+and test_bf examples/ShowList.hs "123"
+and test_bf examples/QuickSort.hs "best"
+# and test_bf examples/TypeClass.hs
+# and test_bf examples/ConstPattern.hs
+# and test_bf examples/
