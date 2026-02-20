@@ -29,7 +29,7 @@ test_golden = unsafePerformIO $ do
              error "GMachine not needed", error "GMachine not needed",
              error "SAM not needed", error "SAM not needed",
              \bf -> do
-                 pure $ BSL.fromStrict $ Brainfuck.render bf
+                 pure $ BSL.fromStrict $ Brainfuck.pprint bf
             )
         let goldenFile = ".golden" </> "hs2bf" </> baseName <.> "bf"
         pure $ goldenVsString ("Brainfuck output: " ++ baseName) goldenFile output
