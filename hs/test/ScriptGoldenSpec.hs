@@ -24,6 +24,7 @@ inputFiles = do
   files <- findByExtension [".hs"] inputFolder
   pure $ filter (\f -> takeBaseName f /= "Prelude") files
 
+{-# NOINLINE test_golden #-}
 test_golden :: TestTree
 test_golden = unsafePerformIO $ do
   files <- inputFiles
