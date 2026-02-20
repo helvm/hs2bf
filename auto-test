@@ -6,7 +6,11 @@
 #   IO ()
 function test_bf
     set hs_path $argv[1]
-    set bf_path examples/(basename $argv[1] .hs).bf
+    set base (basename $argv[1] .hs)
+
+    mkdir -p .golden
+    set bf_path .golden/$base.bf
+
     set expected $argv[2]
 
     echo "=== $hs_path ==="
@@ -16,7 +20,6 @@ function test_bf
     echo $hs2bf_bin
     $hs2bf_bin --make $hs_path > $bf_path
 
-#    set result (time -f 'user:%U sys:%S' bfi/bfi $bf_path)
     set result (time bfi/bfi $bf_path)
     
     if test "$result" = "$expected"
