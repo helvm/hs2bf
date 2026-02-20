@@ -27,13 +27,12 @@ test_golden = unsafePerformIO $ do
     createTest inFile = do
         let baseName = takeBaseName inFile
         let opt = Option { addrSpace = 2, verbose = False, debug = False, tolang = LangBF }
-
-        output <- partialChain opt inFile $
-            (error "Core not needed", error "Core not needed",
-             error "GMachine not needed", error "GMachine not needed",
-             error "SAM not needed", error "SAM not needed",
-             \bf -> pure $ BSL.fromString $ Brainfuck.pprint bf
-            )
-
         let goldenFile = ".golden" </> "hs2bf" </> baseName <.> "bf"
-        pure $ goldenVsString ("Brainfuck output: " ++ baseName) goldenFile output
+        let outputAction :: IO BSL.ByteString
+            outputAction = partialChain opt inFile $
+                (error "Core not needed", error "Core not needed",
+                 error "GMachine not needed", error "GMachine not needed",
+                 error "SAM not needed", error "SAM not needed",
+                 \bf -> pure $ BSL.fromString $ Brainfuck.pprint bf
+                )
+        pure $ goldenVsString ("Brainfuck output: " ++ baseName) goldenFile outputAction
