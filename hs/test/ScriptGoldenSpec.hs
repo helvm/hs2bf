@@ -14,7 +14,9 @@ inputFolder :: FilePath
 inputFolder = "examples"
 
 inputFiles :: IO [FilePath]
-inputFiles = findByExtension [".hs"] inputFolder
+inputFiles = do
+    files <- findByExtension [".hs"] inputFolder
+    pure $ filter (\f -> takeBaseName f /= "Prelude") files
 
 test_golden :: TestTree
 test_golden = unsafePerformIO $ do
