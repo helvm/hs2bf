@@ -6,7 +6,7 @@ module HS2BF.SAM2WS
   , WS(..)
   ) where
 
-import HS2BF.SAM
+import HS2BF.SAM hiding (compileS)
 import Data.List (intercalate)
 import Numeric (showIntAtBase)
 import Data.Char (intToDigit)
@@ -31,7 +31,7 @@ type WSProgram = [WS]
 
 -- | Counter for unique labels
 freshLabel :: String -> String
-freshLabel base = base ++ "_0" -- na początek można prosty, można potem monadę
+freshLabel base = base ++ "_0"
 
 -- | Compile SAM to WS
 compileWS :: SAM -> WSProgram
@@ -48,7 +48,7 @@ compileS = \case
     , Store
     ]
   While (Memory _ d) body ->
-    let lStart = "while_start"  -- możesz potem zrobić counter
+    let lStart = "while_start"
         lEnd = "while_end"
     in [ Label lStart
        , Push d
@@ -61,10 +61,9 @@ compileS = \case
           ]
   Move (Memory _ src) dsts ->
     concatMap (\(Memory _ d) -> [Push src, Load, Push d, Store]) dsts
-  Input (Memory _ d) = [Push d, Store]   -- minimalna wersja
-  Output (Memory _ d) = [Push d, Load]   -- minimalna wersja
-  Clear (Memory _ d) = [Push d, Push 0, Store]
-  -- inne instrukcje traktujemy jako no-op na początek
+  Input (Memory _ d) -> [Push d, Store]     -- <- tu poprawka
+  Output (Memory _ d) -> [Push d, Load]    -- <- tu poprawka
+  Clear (Memory _ d) -> [Push d, Push 0, Store]
   _ -> []
 
 -- | Pretty printer: WS AST → Whitespace kod
@@ -86,7 +85,6 @@ wsInstr = \case
   Return     -> "\n\t\n"
   End        -> "\n\n\n"
 
--- | Encode integer in Whitespace number format
 encodeInt :: Int -> String
 encodeInt n = (if n < 0 then "\t" else " ") ++ binary ++ "\n"
   where
