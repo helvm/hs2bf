@@ -1,0 +1,2 @@
+*.bf linguist-language=Brainfuck
+*.ws linguist-language=Whitespace
